@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>The Sound Garden — Renji Resources</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600;9..144,700&family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --soil-900:#181209; --soil-800:#241a10; --dusk-900:#0b1220; --dusk-800:#101a2c;
+    --parchment:#f4ecdc; --parchment-dim:#c9bea9; --parchment-faint:#8d8371;
+    --panel:#1c140b; --panel-2:#221810; --border:#4a3c28; --border-soft:#3a2f1f;
+    --moss:#93b26a; --moss-deep:#6f9048; --root-blue:#74a3d9; --bud-amber:#e7ac5f; --clay:#d67243; --berry:#c67089;
+    --font-display:'Fraunces', Georgia, serif;
+    --font-body:'Manrope', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    --font-mono:'IBM Plex Mono', ui-monospace, Menlo, monospace;
+  }
+  *,*::before,*::after{ box-sizing:border-box; }
+  html,body{ margin:0; padding:0; min-height:100%; background:var(--soil-900); color:var(--parchment); font-family:var(--font-body); -webkit-tap-highlight-color:transparent; }
+  body{ background:radial-gradient(120% 90% at 50% -10%, #2a2013 0%, var(--soil-900) 42%, var(--dusk-800) 86%, var(--dusk-900) 100%); min-height:100vh; overflow-x:hidden; }
+  button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
+  :focus-visible{ outline:2px solid var(--bud-amber); outline-offset:3px; border-radius:8px; }
+  ::selection{ background:#e7ac5f44; }
+
+  .wrap{ max-width:1060px; margin:0 auto; padding:30px 20px 80px; }
+
+  header.top{ display:flex; align-items:flex-start; gap:15px; margin-bottom:20px; }
+  header.top .leaf{ width:40px; height:40px; flex:none; margin-top:3px; }
+  header.top h1{ font-family:var(--font-display); font-weight:600; font-size:30px; line-height:1.05; margin:0; }
+  header.top h1 .em{ font-style:italic; font-weight:400; color:var(--moss); }
+  header.top p{ margin:7px 0 0; font-size:14px; color:var(--parchment-dim); max-width:64ch; line-height:1.5; }
+
+  .toolbar{ display:flex; gap:16px; flex-wrap:wrap; align-items:center; margin-bottom:20px; }
+  .grp{ display:flex; align-items:center; gap:9px; }
+  .grp .lab{ font-size:11px; font-family:var(--font-mono); color:var(--parchment-faint); letter-spacing:.05em; text-transform:uppercase; }
+  .seg{ display:inline-flex; background:#120c06; border:1px solid var(--border-soft); border-radius:9px; padding:3px; gap:2px; }
+  .seg button{ font-size:12.5px; font-weight:600; color:var(--parchment-dim); padding:5px 12px; border-radius:7px; transition:all .13s; display:flex; align-items:center; gap:6px; }
+  .seg button[aria-pressed="true"]{ background:var(--bud-amber); color:var(--soil-900); }
+  .legend{ display:flex; gap:14px; flex-wrap:wrap; margin-left:auto; }
+  .legend span{ display:flex; align-items:center; gap:6px; font-size:11.5px; color:var(--parchment-dim); }
+  .legend .d{ width:10px; height:10px; border-radius:50%; flex:none; }
+
+  .stage{ display:flex; gap:20px; align-items:stretch; }
+  @media (max-width:820px){ .stage{ flex-direction:column; } }
+
+  /* garden bed / chart */
+  .garden{ flex:1.5 1 0; min-width:0; }
+  .bed{ position:relative; width:100%; aspect-ratio:1.12/1; background:transparent; }
+  .bed svg.frame{ position:absolute; inset:0; width:100%; height:100%; }
+  .axis{ position:absolute; font-family:var(--font-mono); font-size:10px; letter-spacing:.14em; color:var(--parchment-faint); text-transform:uppercase; pointer-events:none; }
+  .axis.top{ top:-2px; left:50%; transform:translateX(-50%); }
+  .axis.bottom{ bottom:-2px; left:50%; transform:translateX(-50%); }
+  .axis.left{ left:-6px; top:50%; transform:translateY(-50%) rotate(-90deg); transform-origin:left center; }
+  .axis.right{ right:-6px; top:50%; transform:translateY(-50%) rotate(90deg); transform-origin:right center; }
+
+  .bloom{ position:absolute; width:58px; height:58px; transform:translate(-50%,-50%); border-radius:50%;
+    display:flex; align-items:center; justify-content:center; transition:transform .18s cubic-bezier(.2,.9,.3,1.3), filter .18s; }
+  .bloom svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
+  .bloom .sym{ position:relative; z-index:2; font-family:var(--font-mono); font-weight:500; font-size:14px; color:#160f07; pointer-events:none; }
+  .bloom:hover{ transform:translate(-50%,-50%) scale(1.13); filter:drop-shadow(0 6px 14px #0008); }
+  .bloom .petals{ transform-origin:22px 22px; transition:transform .3s ease; }
+  .bloom:hover .petals{ transform:rotate(12deg); }
+  .bloom.sel{ transform:translate(-50%,-50%) scale(1.18); filter:drop-shadow(0 8px 18px #000a); }
+  .bloom.sel .petals{ animation:sway 2.6s ease-in-out infinite; }
+  @keyframes sway{ 0%,100%{ transform:rotate(-6deg) } 50%{ transform:rotate(6deg) } }
+  .bloom.sel::after{ content:""; position:absolute; inset:-6px; border-radius:50%; border:2px dashed var(--ring,#e7ac5f); opacity:.55; }
+
+  /* detail card */
+  .detail{ flex:1 1 0; min-width:0; background:linear-gradient(180deg,var(--panel-2),var(--panel)); border:1px solid var(--border); border-radius:18px; padding:20px; box-shadow:0 16px 40px -26px #000; display:flex; flex-direction:column; }
+  .empty{ margin:auto; text-align:center; color:var(--parchment-faint); font-size:13.5px; max-width:26ch; line-height:1.55; }
+  .empty .big{ font-size:30px; display:block; margin-bottom:10px; }
+
+  .card .eyebrow{ font-family:var(--font-mono); font-size:10px; letter-spacing:.13em; text-transform:uppercase; color:var(--lvl,var(--moss)); }
+  .card .symrow{ display:flex; align-items:center; gap:14px; margin:6px 0 2px; }
+  .card .sym{ font-family:var(--font-mono); font-size:40px; font-weight:500; color:var(--parchment); line-height:1; }
+  .card .pos{ font-size:12.5px; color:var(--parchment-dim); }
+  .say{ margin-top:14px; width:100%; display:flex; align-items:center; justify-content:center; gap:10px; background:var(--lvl,var(--moss-deep)); color:#12100a; font-weight:800; font-size:16px; padding:13px; border-radius:13px; transition:transform .1s, filter .15s; }
+  .say:hover{ filter:brightness(1.06); } .say:active{ transform:translateY(1px); }
+  .say svg{ width:18px; height:18px; }
+  .words{ display:flex; gap:8px; flex-wrap:wrap; margin-top:11px; }
+  .words button{ font-size:13.5px; font-weight:600; color:var(--parchment); background:#15100a; border:1px solid var(--border-soft); border-radius:10px; padding:8px 13px; display:flex; align-items:center; gap:7px; transition:border-color .14s, background .14s; }
+  .words button:hover{ border-color:var(--lvl,var(--moss-deep)); background:#1b140c; }
+  .words button svg{ width:12px; height:12px; color:var(--parchment-faint); }
+
+  .trap{ margin-top:16px; background:#1a0f08; border:1px solid var(--border-soft); border-left:3px solid var(--lvl,var(--clay)); border-radius:10px; padding:13px 15px; }
+  .trap .h{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--lvl,var(--clay)); display:flex; align-items:center; gap:7px; margin-bottom:6px; }
+  .trap p{ margin:0; font-size:13.5px; line-height:1.55; color:var(--parchment-dim); }
+
+  .pair{ margin-top:14px; }
+  .pair .h{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--parchment-faint); margin-bottom:8px; }
+  .pairbtn{ width:100%; display:flex; align-items:center; gap:12px; background:#15100a; border:1px solid var(--border-soft); border-radius:12px; padding:12px 15px; transition:border-color .14s, background .14s; }
+  .pairbtn:hover{ border-color:var(--root-blue); background:#1b140c; }
+  .pairbtn .vs{ display:flex; align-items:center; gap:9px; font-weight:700; font-size:15px; }
+  .pairbtn .vs .a{ color:var(--parchment); } .pairbtn .vs .arr{ color:var(--parchment-faint); font-size:13px; }
+  .pairbtn .vs .b{ color:var(--parchment); }
+  .pairbtn .sub{ font-size:10.5px; font-family:var(--font-mono); color:var(--parchment-faint); }
+  .pairbtn .ico{ margin-left:auto; width:30px; height:30px; border-radius:8px; border:1px solid var(--border-soft); display:flex; align-items:center; justify-content:center; color:var(--root-blue); }
+  .pairbtn .ico svg{ width:15px; height:15px; }
+
+  footer.foot{ margin-top:34px; text-align:center; font-size:11px; color:var(--parchment-faint); font-family:var(--font-mono); }
+  .nospeech{ display:none; margin-top:10px; font-size:11.5px; color:var(--clay); }
+
+  @media (prefers-reduced-motion:reduce){ *{ animation:none!important; } }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <svg class="leaf" viewBox="0 0 40 40" fill="none" aria-hidden="true">
+      <path d="M20 37c0-9 0-16 0-16M20 21c-7 0-12-4-13-13 9 0 14 4 13 13ZM20 21c7 0 12-4 13-13-9 0-14 4-13 13Z" stroke="#93b26a" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <div>
+      <h1>The Sound Garden <span class="em">— a talking vowel chart</span></h1>
+      <p>Every English vowel is a bloom, planted where your tongue actually sits — high or low, front or back. Tap one to hear it, see its words, and read the exact trap Japanese learners fall into. Colour tells you how tricky it is.</p>
+    </div>
+  </header>
+
+  <div class="toolbar">
+    <div class="grp">
+      <span class="lab">Accent</span>
+      <div class="seg" id="accentSeg">
+        <button data-a="US" aria-pressed="true">US</button>
+        <button data-a="UK" aria-pressed="false">UK</button>
+      </div>
+    </div>
+    <div class="grp">
+      <span class="lab">Speed</span>
+      <div class="seg" id="speedSeg">
+        <button data-s="normal" aria-pressed="true">Normal</button>
+        <button data-s="slow" aria-pressed="false">🐢 Slow</button>
+      </div>
+    </div>
+    <div class="legend">
+      <span><span class="d" style="background:var(--moss)"></span>Safe anchor</span>
+      <span><span class="d" style="background:var(--bud-amber)"></span>Watch: merges</span>
+      <span><span class="d" style="background:var(--clay)"></span>No JP equivalent</span>
+    </div>
+  </div>
+
+  <div class="stage">
+    <div class="garden">
+      <div class="bed" id="bed">
+        <svg class="frame" viewBox="0 0 100 90" preserveAspectRatio="none" aria-hidden="true">
+          <defs>
+            <linearGradient id="soilg" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0" stop-color="#241a10"/><stop offset="1" stop-color="#15100a"/>
+            </linearGradient>
+          </defs>
+          <polygon points="8,6 92,6 74,84 26,84" fill="url(#soilg)" stroke="#4a3c28" stroke-width="0.6"/>
+          <line x1="50" y1="6" x2="50" y2="84" stroke="#3a2f1f" stroke-width="0.4" stroke-dasharray="1.5 2"/>
+          <line x1="17" y1="45" x2="83" y2="45" stroke="#3a2f1f" stroke-width="0.4" stroke-dasharray="1.5 2"/>
+        </svg>
+        <span class="axis top">close · high tongue</span>
+        <span class="axis bottom">open · low tongue</span>
+        <span class="axis left">front</span>
+        <span class="axis right">back</span>
+      </div>
+      <div class="nospeech" id="nospeech">Your browser can't speak here, but the words, traps and pairs still work. Try Chrome or Safari for audio.</div>
+    </div>
+
+    <div class="detail" id="detail">
+      <div class="empty" id="empty">
+        <span class="big">🌱</span>
+        Tap a bloom to hear it grow — its sound, its words, and the trap to teach around.
+      </div>
+      <div class="card" id="card" style="display:none"></div>
+    </div>
+  </div>
+
+  <footer class="foot">The Sound Garden · part of Renji Resources · audio uses your device's own voice</footer>
+</div>
+
+<script>
+/* ---------------- speech ---------------- */
+const synth = window.speechSynthesis;
+let voices=[], vUS=null, vUK=null, accent='US', speed='normal';
+function loadVoices(){
+  if(!synth){ return; }
+  voices = synth.getVoices()||[];
+  vUS = voices.find(v=>/en[-_]US/i.test(v.lang)) || voices.find(v=>/^en/i.test(v.lang)) || null;
+  vUK = voices.find(v=>/en[-_]GB/i.test(v.lang)) || voices.find(v=>/^en/i.test(v.lang)) || null;
+}
+if(synth){ loadVoices(); synth.onvoiceschanged = loadVoices; }
+else { document.getElementById('nospeech').style.display='block'; }
+
+function utter(word){
+  const u = new SpeechSynthesisUtterance(word);
+  const v = accent==='UK' ? vUK : vUS;
+  if(v){ u.voice=v; u.lang=v.lang; } else { u.lang = accent==='UK'?'en-GB':'en-US'; }
+  u.rate = speed==='slow' ? 0.55 : 0.85;
+  u.pitch = 1;
+  return u;
+}
+function say(word){
+  if(!synth) return;
+  synth.cancel();
+  synth.speak(utter(word));
+}
+function sayPair(a,b){
+  if(!synth) return;
+  synth.cancel();
+  const u1=utter(a), u2=utter(b);
+  u1.onend = ()=>{ setTimeout(()=>synth.speak(u2), 320); };
+  synth.speak(u1);
+}
+
+/* ---------------- level meta ---------------- */
+const LVL = {
+  anchor:{ color:'#93b26a', label:'Safe anchor — close to a Japanese vowel' },
+  watch: { color:'#e7ac5f', label:'Watch — length or tenseness tends to merge' },
+  hard:  { color:'#d67243', label:'Teach explicitly — no clean Japanese equivalent' }
+};
+
+/* ---------------- vowels (x = front→back, positioned on the chart) ---------------- */
+const VOWELS = [
+  { sym:'iː', level:'watch', x:12, y:10, pos:'Close front — the “sheep” vowel',
+    words:['sheep','see','tree'],
+    trap:'Japanese い is short and tense, so /iː/ collapses into /ɪ/ and “sheep” comes out as “ship”. Keep it long, lips smiling.',
+    pair:{sym:'ɪ', word:'ship'} },
+  { sym:'ɪ', level:'watch', x:26, y:24, pos:'Near-close front — the “ship” vowel',
+    words:['ship','sit','big'],
+    trap:'No exact Japanese match. Learners reach for い and drift up to /iː/. It is shorter and laxer, tongue a touch lower.',
+    pair:{sym:'iː', word:'sheep'} },
+  { sym:'e', level:'anchor', x:24, y:54, pos:'Mid front — the “bed” vowel',
+    words:['bed','ten','egg'],
+    trap:'Your safe anchor — very close to Japanese え. Just don’t let it creep upward toward /ɪ/ (“bed” → “bid”).',
+    pair:{sym:'æ', word:'bad'} },
+  { sym:'æ', level:'hard', x:30, y:80, pos:'Near-open front — the “cat” vowel',
+    words:['cat','bad','apple'],
+    trap:'There is no Japanese /æ/. Learners swap in あ (→ “cot/cut”) or え (→ “ket”). Drop the jaw and spread the mouth wide.',
+    pair:{sym:'ʌ', word:'cut'} },
+  { sym:'ʌ', level:'watch', x:56, y:66, pos:'Open-mid central — the “cup” vowel',
+    words:['cup','luck','sun'],
+    trap:'Mapped onto あ, so “cup”, “cap” and “calm” blur together. It’s short and central — not far back.',
+    pair:{sym:'ɑː', word:'calm'} },
+  { sym:'ɑː', level:'watch', x:72, y:86, pos:'Open back — the “car” vowel',
+    words:['father','car','calm'],
+    trap:'Japanese あ is short, so the length and backness vanish and it merges with /ʌ/. Make it long, low and back.',
+    pair:{sym:'ʌ', word:'cup'} },
+  { sym:'ɔː', level:'watch', x:81, y:54, pos:'Open-mid back — the “law” vowel',
+    words:['law','thought','four'],
+    trap:'Japanese オ is higher and shorter; learners round less and cut it short, merging it with お. Long, rounded, low-back.',
+    pair:{sym:'ɑː', word:'car'} },
+  { sym:'ʊ', level:'watch', x:70, y:26, pos:'Near-close back — the “foot” vowel',
+    words:['foot','put','book'],
+    trap:'う substitutes in, and Japanese う is barely rounded — so “foot” slides toward “food”. Keep it short, lax, lightly rounded.',
+    pair:{sym:'uː', word:'food'} },
+  { sym:'uː', level:'watch', x:84, y:12, pos:'Close back — the “food” vowel',
+    words:['food','blue','moon'],
+    trap:'Japanese う is unrounded and short, so learners under-round and shorten it into /ʊ/. Push the lips forward and hold it long.',
+    pair:{sym:'ʊ', word:'foot'} },
+  { sym:'ɜː', level:'hard', x:44, y:42, pos:'Mid central — the “bird” vowel',
+    words:['bird','her','work'],
+    trap:'The “nurse” vowel has no clean Japanese equivalent. Learners fall back on アー or splice in a full vowel. Keep it central, long and even.',
+    pair:{sym:'ə', word:'about'} },
+  { sym:'ə', level:'hard', x:55, y:49, pos:'Schwa — the lazy central vowel',
+    words:['about','teacher','banana'],
+    trap:'The schwa is English’s most common vowel, and Japanese has no reduced vowel — every syllable gets a full one (chocolate → cho-ko-re-to). Make it weak, quick and lazy.',
+    pair:{sym:'ʌ', word:'cup'} }
+];
+
+/* ---------------- flower + icons ---------------- */
+function flower(color){
+  let petals='';
+  for(let i=0;i<6;i++){ petals += '<ellipse cx="22" cy="8.5" rx="5.4" ry="9.2" fill="'+color+'" transform="rotate('+(i*60)+' 22 22)"/>'; }
+  return '<svg viewBox="0 0 44 44"><g class="petals" opacity="0.92">'+petals+'</g>'
+    +'<circle cx="22" cy="22" r="8.2" fill="#1a120a"/><circle cx="22" cy="22" r="8.2" fill="'+color+'" opacity="0.28"/></svg>';
+}
+const SPKR = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9H4Z" stroke-linejoin="round"/><path d="M17 8.5a5 5 0 0 1 0 7M19.5 6a8 8 0 0 1 0 12" stroke-linecap="round"/></svg>';
+const SPKR_SM = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9v6h4l5 4V5L8 9H4Z" stroke-linejoin="round"/><path d="M17 9a4 4 0 0 1 0 6" stroke-linecap="round"/></svg>';
+const SWAP = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 8h13l-3-3M20 16H7l3 3" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+/* ---------------- build blooms ---------------- */
+const bed = document.getElementById('bed');
+let selected = null;
+VOWELS.forEach((v,i)=>{
+  const b=document.createElement('button');
+  b.className='bloom';
+  b.style.left=v.x+'%'; b.style.top=v.y+'%';
+  b.style.setProperty('--ring', LVL[v.level].color);
+  b.setAttribute('aria-label', v.sym+' as in '+v.words[0]);
+  b.innerHTML = flower(LVL[v.level].color) + '<span class="sym">'+v.sym+'</span>';
+  b.addEventListener('click', ()=>{ select(i, b); });
+  v._el=b;
+  bed.appendChild(b);
+});
+
+/* ---------------- detail ---------------- */
+const emptyEl=document.getElementById('empty');
+const cardEl=document.getElementById('card');
+const detailEl=document.getElementById('detail');
+
+function select(i, el){
+  const v=VOWELS[i];
+  if(selected) selected.classList.remove('sel');
+  el.classList.add('sel'); selected=el;
+  say(v.words[0]);
+  renderCard(v);
+}
+function renderCard(v){
+  const c=LVL[v.level];
+  emptyEl.style.display='none';
+  cardEl.style.display='flex';
+  cardEl.style.setProperty('--lvl', c.color);
+  detailEl.style.setProperty('--lvl', c.color);
+  cardEl.innerHTML =
+    '<div class="eyebrow">'+c.label+'</div>'
+    + '<div class="symrow"><span class="sym">/'+v.sym+'/</span></div>'
+    + '<div class="pos">'+v.pos+'</div>'
+    + '<button class="say" data-w="'+v.words[0]+'">'+SPKR+' Hear /'+v.sym+'/ — “'+v.words[0]+'”</button>'
+    + '<div class="words">'+ v.words.map(w=>'<button data-w="'+w+'">'+SPKR_SM+' '+w+'</button>').join('') +'</div>'
+    + '<div class="trap"><div class="h">⚠ Japanese-learner trap</div><p>'+v.trap+'</p></div>'
+    + '<div class="pair"><div class="h">Minimal pair — hear the contrast</div>'
+      + '<button class="pairbtn" data-a="'+v.words[0]+'" data-b="'+v.pair.word+'">'
+        + '<span class="vs"><span class="a">'+v.words[0]+'</span><span class="arr">↔</span><span class="b">'+v.pair.word+'</span></span>'
+        + '<span class="sub">/'+v.sym+'/ vs /'+v.pair.sym+'/</span>'
+        + '<span class="ico">'+SWAP+'</span></button></div>';
+  cardEl.querySelector('.say').addEventListener('click', e=>say(e.currentTarget.dataset.w));
+  cardEl.querySelectorAll('.words button').forEach(btn=>btn.addEventListener('click', e=>say(e.currentTarget.dataset.w)));
+  cardEl.querySelector('.pairbtn').addEventListener('click', e=>sayPair(e.currentTarget.dataset.a, e.currentTarget.dataset.b));
+}
+
+/* ---------------- toolbar ---------------- */
+document.getElementById('accentSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  accent=b.dataset.a;
+  document.getElementById('accentSeg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.a===accent));
+}));
+document.getElementById('speedSeg').querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>{
+  speed=b.dataset.s;
+  document.getElementById('speedSeg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.s===speed));
+}));
+</script>
+</body>
+</html>
