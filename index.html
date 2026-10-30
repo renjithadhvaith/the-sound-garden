@@ -191,7 +191,7 @@
     <div class="detail" id="detail">
       <div class="empty" id="empty">
         <span class="big">🌱</span>
-        Tap a bloom to hear it grow — its sound, its words, and the trap to teach around.
+        Tap a bloom to hear it grow: its sound, its example words, the common <b title="A mistake Japanese learners often make with this sound">“trap”</b> (a mistake learners often make), and its <b title="Two words that differ by only one sound, like ship and sheep">“minimal pair”</b> (two words that differ by one sound, like ship and sheep).
       </div>
       <div class="card" id="card" style="display:none"></div>
     </div>
@@ -340,8 +340,8 @@ function renderCard(v){
     + '<div class="pos">'+v.pos+'</div>'
     + '<button class="say" data-w="'+v.words[0]+'">'+SPKR+' Hear /'+v.sym+'/ — “'+v.words[0]+'”</button>'
     + '<div class="words">'+ v.words.map(w=>'<button data-w="'+w+'">'+SPKR_SM+' '+w+'</button>').join('') +'</div>'
-    + '<div class="trap"><div class="h">⚠ Japanese-learner trap</div><p>'+v.trap+'</p></div>'
-    + '<div class="pair"><div class="h">Minimal pair — hear the contrast</div>'
+    + '<div class="trap"><div class="h" title="A mistake Japanese learners often make with this sound">⚠ Japanese-learner trap</div><p>'+v.trap+'</p></div>'
+    + '<div class="pair"><div class="h" title="Two words that differ by only one sound">Minimal pair — hear the contrast</div>'
       + '<button class="pairbtn" data-a="'+v.words[0]+'" data-b="'+v.pair.word+'">'
         + '<span class="vs"><span class="a">'+v.words[0]+'</span><span class="arr">↔</span><span class="b">'+v.pair.word+'</span></span>'
         + '<span class="sub">/'+v.sym+'/ vs /'+v.pair.sym+'/</span>'

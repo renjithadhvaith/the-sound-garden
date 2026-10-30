@@ -163,7 +163,7 @@ function draw(){const e=st.t*st.t*(3-2*st.t),m=mix(st.from,st.to,e),P=m.pts,jy=m
  const anc={jaw:[66,ly+8],lips:[44,142]};
  if(st.mode==='vowel')(V.arrows||[]).forEach(([r,dx,dy,t])=>{const a=anc[r]||P[RN.indexOf(r)],x2=a[0]+dx*e,y2=a[1]+dy*e;
   if(dx||dy)s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${x2}" y2="${y2}"  class="al" stroke-width="2.2" marker-end="url(#ar)" opacity="${e}"/>`;
-  s+=`<text x="${x2+(dx<0?-6:6)}" y="${y2+(dy<0?-6:12)}" text-anchor="${dx<0?'end':'start'}" font-size="10" class="hl ar" opacity="${e}">${t}</text>`});
+  s+=`<text x="${x2+(dx<0?-6:6)}" y="${y2+(dy<0?-6:dy>0?12:-9)}" text-anchor="${dx<0?'end':'start'}" font-size="10" class="hl ar" opacity="${e}">${t}</text>`});
  s+=`<g font-size="10" class="lb"><text x="6" y="100">Lips</text><text x="60" y="84">Alveolar ridge</text><text x="130" y="76">Hard palate</text><text x="250" y="76">Soft palate / velum</text><text x="352" y="190">Pharyngeal</text><text x="352" y="203">back wall</text><text x="6" y="${ly+36}">Lower teeth</text></g>`;
  $('#st-main').innerHTML=s;lens(m);$('#st-sc').value=Math.round(st.t*1000)}
 
@@ -218,7 +218,7 @@ function build(){const sec=document.createElement('section');sec.className='stud
  <p>The house boosts some notes of the buzz and muffles others, and your ear hears that mix as a vowel. It is not a whistle: no air squeals through a gap. The rooms just amplify.</p>
  <h4>Two pitches: do not mix them up</h4>
  <ul><li><b>Voice pitch</b> is how fast the kazoo buzzes. Sing “ee, ah, oo” on one note and the yellow dots keep exactly the same rhythm. Slide the 🐝 slider in the Pitch Playground to change it.</li>
- <li><b>Room notes</b> are what each room rings at. They move when the sofa moves, and they make the vowel. Phoneticians call them F1 and F2.</li></ul>
+ <li><b>Room notes</b> are what each room rings at. They move when the sofa moves, and they make the vowel. Phoneticians call them F1 (roughly the back-room, throat note) and F2 (roughly the front-room, mouth note).</li></ul>
  <h4>Three house parties</h4>
  <ul><li><b>“ee”:</b> the sofa humps up toward the roof while its front edge stays low, down behind your lower teeth. It does not slide up to your front teeth. The front room shrinks to a broom closet that squeaks a high note, and the back room becomes a ballroom with a deep note. Bright, squeaky “eee”, like a mouse in a closet.</li>
  <li><b>“ah”:</b> the sofa sinks into the floor and the jaw drops (the dentist says “say ah”). The front room becomes a ballroom and the throat shrinks to a cupboard with a high note. Open, ringing “ahh”.</li>
