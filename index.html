@@ -114,7 +114,7 @@
     </svg>
     <div>
       <h1>The Sound Garden <span class="em">— a talking vowel chart</span></h1>
-      <p>Every English vowel is a bloom, planted where your tongue actually sits — high or low, front or back. Tap one to hear it, see its words, and read the exact trap Japanese learners fall into. Colour tells you how tricky it is.</p>
+      <p>Every English vowel is a bloom, planted by how the whole tongue, jaw and lips shape your mouth — high or low, front or back. Tap one to hear it, see its words, and read the exact trap Japanese learners fall into. Colour tells you how tricky it is.</p>
     </div>
   </header>
 
@@ -299,6 +299,7 @@ function select(i, el){
   el.classList.add('sel'); selected=el;
   say(v.words[0]);
   renderCard(v);
+  if(window.SoundStudio) SoundStudio.showSym(v.sym);
 }
 function renderCard(v){
   const c=LVL[v.level];
@@ -333,5 +334,6 @@ document.getElementById('speedSeg').querySelectorAll('button').forEach(b=>b.addE
   document.getElementById('speedSeg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.s===speed));
 }));
 </script>
+<script src="tongue-studio.js"></script>
 </body>
 </html>
