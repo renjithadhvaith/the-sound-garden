@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script>try{document.documentElement.dataset.skin=localStorage.getItem('sg-skin')||(matchMedia('(prefers-color-scheme: light)').matches?'day':'night')}catch(e){}</script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>The Sound Garden — Renji Resources</title>
@@ -19,7 +20,7 @@
   }
   *,*::before,*::after{ box-sizing:border-box; }
   html,body{ margin:0; padding:0; min-height:100%; background:var(--soil-900); color:var(--parchment); font-family:var(--font-body); -webkit-tap-highlight-color:transparent; }
-  body{ background:radial-gradient(120% 90% at 50% -10%, #2a2013 0%, var(--soil-900) 42%, var(--dusk-800) 86%, var(--dusk-900) 100%); min-height:100vh; overflow-x:hidden; }
+  body{ background:var(--page-bg); min-height:100vh; overflow-x:hidden; }
   button{ font-family:inherit; cursor:pointer; border:none; background:none; color:inherit; }
   :focus-visible{ outline:2px solid var(--bud-amber); outline-offset:3px; border-radius:8px; }
   ::selection{ background:#e7ac5f44; }
@@ -35,7 +36,7 @@
   .toolbar{ display:flex; gap:16px; flex-wrap:wrap; align-items:center; margin-bottom:20px; }
   .grp{ display:flex; align-items:center; gap:9px; }
   .grp .lab{ font-size:11px; font-family:var(--font-mono); color:var(--parchment-faint); letter-spacing:.05em; text-transform:uppercase; }
-  .seg{ display:inline-flex; background:#120c06; border:1px solid var(--border-soft); border-radius:9px; padding:3px; gap:2px; }
+  .seg{ display:inline-flex; background:var(--ink-0); border:1px solid var(--border-soft); border-radius:9px; padding:3px; gap:2px; }
   .seg button{ font-size:12.5px; font-weight:600; color:var(--parchment-dim); padding:5px 12px; border-radius:7px; transition:all .13s; display:flex; align-items:center; gap:6px; }
   .seg button[aria-pressed="true"]{ background:var(--bud-amber); color:var(--soil-900); }
   .legend{ display:flex; gap:14px; flex-wrap:wrap; margin-left:auto; }
@@ -58,7 +59,7 @@
   .bloom{ position:absolute; width:58px; height:58px; transform:translate(-50%,-50%); border-radius:50%;
     display:flex; align-items:center; justify-content:center; transition:transform .18s cubic-bezier(.2,.9,.3,1.3), filter .18s; }
   .bloom svg{ position:absolute; inset:0; width:100%; height:100%; overflow:visible; }
-  .bloom .sym{ position:relative; z-index:2; font-family:var(--font-mono); font-weight:500; font-size:14px; color:#160f07; pointer-events:none; }
+  .bloom .sym{ position:relative; z-index:2; font-family:var(--font-mono); font-weight:500; font-size:14px; color:var(--sym); pointer-events:none; }
   .bloom:hover{ transform:translate(-50%,-50%) scale(1.13); filter:drop-shadow(0 6px 14px #0008); }
   .bloom .petals{ transform-origin:22px 22px; transition:transform .3s ease; }
   .bloom:hover .petals{ transform:rotate(12deg); }
@@ -80,18 +81,18 @@
   .say:hover{ filter:brightness(1.06); } .say:active{ transform:translateY(1px); }
   .say svg{ width:18px; height:18px; }
   .words{ display:flex; gap:8px; flex-wrap:wrap; margin-top:11px; }
-  .words button{ font-size:13.5px; font-weight:600; color:var(--parchment); background:#15100a; border:1px solid var(--border-soft); border-radius:10px; padding:8px 13px; display:flex; align-items:center; gap:7px; transition:border-color .14s, background .14s; }
-  .words button:hover{ border-color:var(--lvl,var(--moss-deep)); background:#1b140c; }
+  .words button{ font-size:13.5px; font-weight:600; color:var(--parchment); background:var(--ink-1); border:1px solid var(--border-soft); border-radius:10px; padding:8px 13px; display:flex; align-items:center; gap:7px; transition:border-color .14s, background .14s; }
+  .words button:hover{ border-color:var(--lvl,var(--moss-deep)); background:var(--ink-2); }
   .words button svg{ width:12px; height:12px; color:var(--parchment-faint); }
 
-  .trap{ margin-top:16px; background:#1a0f08; border:1px solid var(--border-soft); border-left:3px solid var(--lvl,var(--clay)); border-radius:10px; padding:13px 15px; }
+  .trap{ margin-top:16px; background:var(--ink-t); border:1px solid var(--border-soft); border-left:3px solid var(--lvl,var(--clay)); border-radius:10px; padding:13px 15px; }
   .trap .h{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--lvl,var(--clay)); display:flex; align-items:center; gap:7px; margin-bottom:6px; }
   .trap p{ margin:0; font-size:13.5px; line-height:1.55; color:var(--parchment-dim); }
 
   .pair{ margin-top:14px; }
   .pair .h{ font-family:var(--font-mono); font-size:10.5px; letter-spacing:.1em; text-transform:uppercase; color:var(--parchment-faint); margin-bottom:8px; }
-  .pairbtn{ width:100%; display:flex; align-items:center; gap:12px; background:#15100a; border:1px solid var(--border-soft); border-radius:12px; padding:12px 15px; transition:border-color .14s, background .14s; }
-  .pairbtn:hover{ border-color:var(--root-blue); background:#1b140c; }
+  .pairbtn{ width:100%; display:flex; align-items:center; gap:12px; background:var(--ink-1); border:1px solid var(--border-soft); border-radius:12px; padding:12px 15px; transition:border-color .14s, background .14s; }
+  .pairbtn:hover{ border-color:var(--root-blue); background:var(--ink-2); }
   .pairbtn .vs{ display:flex; align-items:center; gap:9px; font-weight:700; font-size:15px; }
   .pairbtn .vs .a{ color:var(--parchment); } .pairbtn .vs .arr{ color:var(--parchment-faint); font-size:13px; }
   .pairbtn .vs .b{ color:var(--parchment); }
@@ -103,6 +104,24 @@
   .nospeech{ display:none; margin-top:10px; font-size:11.5px; color:var(--clay); }
 
   @media (prefers-reduced-motion:reduce){ *{ animation:none!important; } }
+
+  /* layout fix: the detail card was a row, which pushed the right side off-screen */
+  .card{ flex-direction:column; min-width:0; } .card *{ min-width:0; overflow-wrap:anywhere; }
+  .detail{ overflow:hidden; }
+  .jump{ margin-top:14px; width:100%; font-size:13px; font-weight:700; color:var(--parchment); background:var(--ink-1); border:1px solid var(--border-soft); border-radius:12px; padding:11px 14px; }
+  .jump:hover{ border-color:var(--moss); }
+  /* skins */
+  :root{ --ink-0:#120c06; --ink-1:#15100a; --ink-2:#1b140c; --ink-t:#1a0f08; --sym:#f4ecdc; --arrow:#f2c94c;
+    --page-bg:radial-gradient(120% 90% at 50% -10%, #2a2013 0%, var(--soil-900) 42%, var(--dusk-800) 86%, var(--dusk-900) 100%); }
+  html[data-skin="day"]{ --parchment:#2a2013; --parchment-dim:#54463300; --parchment-dim:#544633; --parchment-faint:#75664f;
+    --panel:#fffaf0; --panel-2:#fbf3e2; --border:#cbb994; --border-soft:#dccfb3; --moss:#547a2e; --moss-deep:#6f9048; --root-blue:#2f6aa8; --bud-amber:#e0982f; --clay:#b4501f;
+    --ink-0:#f3ead6; --ink-1:#fbf4e4; --ink-2:#f0e6d0; --ink-t:#fbefe0; --arrow:#8a5200;
+    --page-bg:linear-gradient(180deg,#fbf5e8 0%,#f0e6d0 100%); background:#f0e6d0; }
+  html[data-skin="meadow"]{ --parchment:#1f2d17; --parchment-dim:#41543a; --parchment-faint:#61765a;
+    --panel:#f8fcf1; --panel-2:#f1f8e6; --border:#b3cb98; --border-soft:#cbdcb4; --moss:#3f6f22; --moss-deep:#5d8a3a; --root-blue:#2f6aa8; --bud-amber:#d9a441; --clay:#b4501f;
+    --ink-0:#e6f0d6; --ink-1:#f6fbee; --ink-2:#ebf4de; --ink-t:#f6f3e2; --arrow:#7a5200;
+    --page-bg:linear-gradient(180deg,#eef6e2 0%,#d9e9c4 100%); background:#d9e9c4; }
+  html[data-skin="day"] ::selection, html[data-skin="meadow"] ::selection{ background:#e0982f55; }
 </style>
 </head>
 <body>
@@ -131,6 +150,14 @@
       <div class="seg" id="speedSeg">
         <button data-s="normal" aria-pressed="true">Normal</button>
         <button data-s="slow" aria-pressed="false">🐢 Slow</button>
+      </div>
+    </div>
+    <div class="grp">
+      <span class="lab">Skin</span>
+      <div class="seg" id="skinSeg">
+        <button data-k="night" aria-pressed="true">🌙 Night</button>
+        <button data-k="day" aria-pressed="false">☀️ Day</button>
+        <button data-k="meadow" aria-pressed="false">🌿 Meadow</button>
       </div>
     </div>
     <div class="legend">
@@ -318,7 +345,8 @@ function renderCard(v){
       + '<button class="pairbtn" data-a="'+v.words[0]+'" data-b="'+v.pair.word+'">'
         + '<span class="vs"><span class="a">'+v.words[0]+'</span><span class="arr">↔</span><span class="b">'+v.pair.word+'</span></span>'
         + '<span class="sub">/'+v.sym+'/ vs /'+v.pair.sym+'/</span>'
-        + '<span class="ico">'+SWAP+'</span></button></div>';
+        + '<span class="ico">'+SWAP+'</span></button></div>'
+    + '<button class="jump" onclick="document.getElementById(\'studio\').scrollIntoView({behavior:\'smooth\'})">See the whole-tongue shape for /'+v.sym+'/ ↓</button>';
   cardEl.querySelector('.say').addEventListener('click', e=>say(e.currentTarget.dataset.w));
   cardEl.querySelectorAll('.words button').forEach(btn=>btn.addEventListener('click', e=>say(e.currentTarget.dataset.w)));
   cardEl.querySelector('.pairbtn').addEventListener('click', e=>sayPair(e.currentTarget.dataset.a, e.currentTarget.dataset.b));
@@ -333,6 +361,18 @@ document.getElementById('speedSeg').querySelectorAll('button').forEach(b=>b.addE
   speed=b.dataset.s;
   document.getElementById('speedSeg').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.s===speed));
 }));
+
+/* ---------------- skins ---------------- */
+(function(){
+  const seg=document.getElementById('skinSeg');
+  function set(k,save){
+    document.documentElement.dataset.skin=k;
+    seg.querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed', x.dataset.k===k));
+    if(save){ try{ localStorage.setItem('sg-skin',k); }catch(e){} }
+  }
+  set(document.documentElement.dataset.skin||'night', false);
+  seg.querySelectorAll('button').forEach(b=>b.addEventListener('click',()=>set(b.dataset.k,true)));
+})();
 </script>
 <script src="tongue-studio.js"></script>
 </body>
