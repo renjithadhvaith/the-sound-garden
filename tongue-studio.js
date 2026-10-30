@@ -85,7 +85,7 @@ const VOWELS={
 };
 const PAIRS=[['i','a'],['i','u'],['e','o'],['u','a'],['i','I'],['ae','e']];
 const KEY={'iː':'i','ɪ':'I','e':'e','æ':'ae','ʌ':'A','ɑː':'a','ɔː':'aw','ʊ':'U','uː':'u','ɜː':'er','ə':'sh'}; /* chart vowels that map to a studio vowel */
-const st={mode:'vowel',v:'i',pair:0,t:0,dir:1,play:!matchMedia('(prefers-reduced-motion:reduce)').matches,slow:false};
+const st={mode:'vowel',clock:0,v:'i',pair:0,t:0,dir:1,play:!matchMedia('(prefers-reduced-motion:reduce)').matches,slow:false};
 
 const css=`.studio{margin-top:40px;background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--border);border-radius:18px;padding:20px}
 .studio h2{font-family:var(--font-display);font-weight:600;font-size:24px;margin:0 0 6px}.studio p{color:var(--parchment-dim);font-size:14px;line-height:1.55;margin:0 0 12px;max-width:68ch}
@@ -99,7 +99,7 @@ const css=`.studio{margin-top:40px;background:linear-gradient(180deg,var(--panel
 .studio .ctl{display:flex;gap:14px;align-items:center;flex-wrap:wrap;margin-top:12px;font-size:13px;color:var(--parchment-dim)}
 .studio input[type=range]{flex:1;min-width:140px;accent-color:var(--bud-amber)}
 .studio .key{display:flex;gap:12px;flex-wrap:wrap;font-size:12px;color:var(--parchment-dim)}.studio .key i{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px}
-.studio .hl{stroke:var(--ink-0);stroke-width:3;paint-order:stroke}.studio .tl{fill:var(--parchment)}.studio .ar{fill:var(--arrow)}.studio .lb{fill:var(--parchment-dim)}.studio .al{stroke:var(--parchment)}.studio .am{fill:var(--parchment)}
+.studio .hl{stroke:var(--ink-0);stroke-width:3;paint-order:stroke}.studio .tl{fill:var(--parchment)}.studio .ar{fill:var(--arrow)}.studio .lb{fill:var(--parchment-dim)}.studio .al{stroke:var(--parchment)}.studio .am{fill:var(--parchment)}.studio .tr{fill:var(--border-soft)}
 .studio .guide{margin-top:18px;background:var(--ink-1);border:1px solid var(--border-soft);border-radius:12px;padding:14px 16px}.studio .guide summary{cursor:pointer;font-weight:700;font-size:15px}.studio .guide h4{margin:14px 0 4px}.studio .guide ul{margin:0 0 10px;padding-left:20px;color:var(--parchment-dim);font-size:14px;line-height:1.6}
 .studio a{color:var(--root-blue)}.studio h4{margin:0 0 6px;font-size:14px}`;
 
@@ -116,19 +116,27 @@ function setup(){const A=st.mode==='contrast'?VOWELS[PAIRS[st.pair][0]]:null;
   st.zones={};d.forEach(([r,v],k)=>st.zones[r]=k<2?'y':(k==2&&v>12?'o':'b'));st.big=d.slice(0,2).map(x=>RL[x[0]]);}
  st.t=0;st.dir=1;info();draw()}
 
+function dims(m){const p=m.pts;return{f:cl(((p[2][1]+p[3][1])/2-94)/120,.06,1),b:cl((343-p[4][0]-8)/60,.06,1),o:cl(.3+.5*m.jaw+.25*m.spread-.55*m.round,.1,1)}}
+const rm=s=>s<.3?['broom closet','high']:s<.62?['cozy lounge','mid']:['ballroom','low'];
 function info(){const v=VOWELS[st.v],i=$('#st-info');let h='';
- if(st.mode==='vowel')h=`<h3>/${v.sym}/ as in “${v.label}” <button class="chip" id="st-hear">Hear “${v.say}”</button></h3><p><b>What to focus on:</b> ${v.focus}</p><p>${v.cav}</p>`;
+ if(st.mode==='vowel')h=`<h3>/${v.sym}/ as in “${v.label}” <button class="chip" id="st-hear">Hear “${v.say}”</button></h3><p><b>What to focus on:</b> ${v.focus}</p><p>${v.cav}</p><p>🏠 <b>House report:</b> front room = ${rm(dims(v).f)[0]} (${rm(dims(v).f)[1]} note), back room = ${rm(dims(v).b)[0]} (${rm(dims(v).b)[1]} note).</p>`;
  if(st.mode==='mistake')h=`<h3>Habit: ${v.err.name}</h3><p>The red ghost is the habit; the live tongue moves to the target.</p><p><b>Correction:</b> ${v.err.fix}</p>`;
  if(st.mode==='contrast'){const [a,b]=PAIRS[st.pair],A=VOWELS[a],B=VOWELS[b],x=[];
   if(Math.abs(A.jaw-B.jaw)>.3)x.push('jaw '+(B.jaw>A.jaw?'opens':'closes'));if(Math.abs(A.round-B.round)>.4)x.push('lips '+(B.round>A.round?'round':'unround'));
   h=`<h3>/${A.sym}/ ↔ /${B.sym}/</h3><p>Yellow marks what changes most: <b>${st.big.join(' and ')}</b>${x.length?'; also '+x.join(', '):''}. Blue regions barely move.</p>`}
  i.innerHTML=h;const hb=$('#st-hear');if(hb)hb.onclick=()=>window.say&&window.say(v.say)}
 
-function lens(m){const p=m.pts,f=cl(((p[2][1]+p[3][1])/2-94)/120,.06,1),b=cl((343-p[4][0]-8)/60,.06,1),o=cl(.3+.5*m.jaw+.25*m.spread-.55*m.round,.1,1),w=s=>s<.3?'narrow':s<.62?'medium':'wide',hf=6+f*50,hb=6+b*50;
+function lens(m){const {f,b,o}=dims(m),hf=6+f*50,hb=6+b*50,F=rm(f),B=rm(b),c=st.clock;
+ let puffs='';for(let i=0;i<9;i++){const u=(c*60+i*41.7)%375;puffs+=`<circle cx="${415-u}" cy="${62+Math.sin(c*7+i*2)*4}" r="3.2" fill="#e7ac5f" opacity="${u<20||u>355?.3:.9}"/>`}
+ const bar=(y,l,v,col,w)=>`<text x="8" y="${y+8}" font-size="10" class="lb">${l}</text><rect x="130" y="${y}" width="220" height="8" rx="4" class="tr"/><rect x="130" y="${y}" width="${220*v}" height="8" rx="4" fill="${col}"/><text x="358" y="${y+8}" font-size="10" class="lb">${w}</text>`;
  $('#st-lens').innerHTML=`<rect x="50" y="${62-hf}" width="165" height="${hf*2}" rx="22" fill="#93b26a" fill-opacity=".35" stroke="#93b26a"/><rect x="215" y="55" width="20" height="14" fill="#8aa9c9" fill-opacity=".4"/>
  <rect x="235" y="${62-hb}" width="150" height="${hb*2}" rx="22" fill="#74a3d9" fill-opacity=".35" stroke="#74a3d9"/>
  <path d="M40 ${62-4-o*16}H52M40 ${62+4+o*16}H52" stroke="#d98c9b" stroke-width="6" stroke-linecap="round"/>
- <text x="132" y="122" text-anchor="middle" class="lb" font-size="11">Front oral cavity: ${w(f)}</text><text x="310" y="122" text-anchor="middle" class="lb" font-size="11">Back / pharyngeal cavity: ${w(b)}</text>`}
+ <path d="M394 62l4-9 6 18 6-18 6 18 4-9" fill="none" stroke="#e7ac5f" stroke-width="2" stroke-linejoin="round"/><text x="412" y="90" text-anchor="middle" font-size="9" class="lb">kazoo</text>
+ ${puffs}<text x="225" y="40" text-anchor="middle" font-size="15">🛋️</text><text x="225" y="52" text-anchor="middle" font-size="8" class="hl lb">sofa</text>
+ <text x="132" y="132" text-anchor="middle" font-size="11" class="lb">Front room: ${F[0]}</text><text x="310" y="132" text-anchor="middle" font-size="11" class="lb">Back room: ${B[0]}</text>
+ <text x="220" y="147" text-anchor="middle" font-size="9.5" class="lb">← air flows left, out the front door (${o<.35?'nearly shut':o<.7?'half open':'wide open'}${m.round>.5?', pushed out like a hallway':''})</text>
+ ${bar(158,'Voice buzz pitch',.5,'#8d8371','steady')}${bar(174,'Front room rings',cl(1-f,.1,.95),'#93b26a',F[1]+' note')}${bar(190,'Back room rings',cl(1-b,.1,.95),'#74a3d9',B[1]+' note')}`}
 
 function draw(){const e=st.t*st.t*(3-2*st.t),m=mix(st.from,st.to,e),P=m.pts,jy=m.jaw*22,ly=168+jy,d=body(m),V=st.to,
  z=r=>COL[st.zones[r]]||COL.b;
@@ -163,25 +171,28 @@ function build(){const sec=document.createElement('section');sec.className='stud
  <div class="row" id="st-pk"></div>
  <div class="grid" id="st-grid"><div><svg id="st-main" viewBox="0 0 440 290" role="img" aria-label="Side view of the mouth with a flexible tongue"></svg>
   <div class="key" style="margin-top:10px"><span><i style="background:${COL.y}"></i>Primary shaping</span><span><i style="background:${COL.o}"></i>Supporting</span><span><i style="background:${COL.b}"></i>Relaxed</span></div></div>
-  <div><div class="info" id="st-info"></div><h4>Cavity Lens</h4><svg id="st-lens" viewBox="0 0 440 130" role="img" aria-label="Front and back vocal tract cavities"></svg>
-  <p style="margin-top:8px">Vowel quality comes from the shape of the whole vocal tract, two linked spaces whose sizes change as the tongue moves, not from any single tongue point.</p></div></div>
+  <div><div class="info" id="st-info"></div><h4>Cavity Lens: the house inside your head</h4><svg id="st-lens" viewBox="0 0 440 202" role="img" aria-label="Front room and back room of the vocal tract, with air puffs and pitch meters"></svg>
+  <p style="margin-top:8px">Green is the front room, blue is the back room, and the yellow dots are puffs of air carrying the voice buzz. The puffs arrive at the same rhythm for every vowel, so the voice pitch does not change. What changes is the note each room rings at, and that is the vowel.</p></div></div>
  <div class="ctl" id="st-ctl"><button class="chip" id="st-pp">Pause</button><input type="range" id="st-sc" min="0" max="1000" aria-label="Animation position"><label><input type="checkbox" id="st-slow"> Slow motion</label></div>
 
- <details class="guide" open><summary>Cavity Lens: how to read it, with simple examples</summary>
- <h4>The idea: two bottles joined by a neck</h4>
- <p>Picture your mouth and throat as two bottles joined by a short neck. The <b>front bottle</b> is the space between your tongue and your lips (green). The <b>back bottle</b> is the throat space behind the tongue (blue). The tongue squeezes or opens the neck and changes how big each bottle is.</p>
- <p>Blow across the top of a bottle and it hums: a big bottle gives a low note, a small one a high note. Your voice works the same way. The buzz from your vocal folds makes both spaces ring, and each shape strengthens certain pitches. Your ear reads that pattern of strong pitches as the vowel. That is why one buzz can sound like “ee” or “ah”: only the bottle shapes changed.</p>
- <h4>Three things to try</h4>
- <ul><li><b>Whisper “ee … ah … oo”.</b> Nothing buzzes, yet you still hear three different vowels, with “ee” bright and “oo” dark and hollow. What you hear is only the shape of the spaces.</li>
- <li><b>Say “ee” then “ah” with a finger under your chin.</b> The jaw drops and the tongue sinks, so the front bottle grows. The tongue root moves back, so the throat bottle shrinks. Watch the green shape grow and the blue one shrink.</li>
- <li><b>Say “ee” then “oo” with a finger in front of your lips.</b> The lips push forward and make a small opening. The front space becomes a long pipe with a tiny outlet, and the sound turns from bright to dark.</li></ul>
- <h4>Reading the screen</h4>
- <p>Green is the front oral cavity, blue is the back (pharyngeal) cavity, the pink bars on the left are the lip opening, and the grey neck is where the tongue narrows the tract. “Narrow, medium, wide” are rough size labels worked out from the tongue shape.</p>
- <h4>Cheat sheet</h4>
- <ul><li><b>/i/ “ee”:</b> small front space, wide throat, so a bright, high sound.</li>
- <li><b>/a/ “ah”:</b> wide front space, narrow throat, so an open, ringing sound.</li>
- <li><b>/u/ “oo”:</b> long front space with a tiny lip opening, so a dark, hollow sound.</li></ul>
- <p>Phoneticians call the strongest pitches F1 and F2. As a rough rule, an open jaw with a narrow throat raises F1 (/a/), a high front tongue raises F2 (/i/), and rounded lips lower both (/u/). Two bottles is a teaching simplification: the real tract is one continuous tube, and many other details matter.</p></details>
+ <details class="guide" open><summary>Cavity Lens made easy: the house, the sofa and the kazoo</summary>
+ <h4>Meet the house</h4>
+ <p>Your mouth and throat are a tiny house. The <b>front door</b> is your lips. Your tongue is a big squishy <b>sofa</b> that can hump up, slide back or sink into the floor. The room between the sofa and the front door is the <b>front room</b> (green). The room between the sofa and the back wall is the <b>back room</b> (blue), which is really your throat. In the basement lives a <b>kazoo</b>: your vocal folds.</p>
+ <h4>The air’s journey</h4>
+ <ul><li>Your lungs push air up the stairs.</li><li>The kazoo chops it into tiny puffs, roughly 100 to 250 a second. That rhythm is your voice pitch (the yellow dots).</li><li>The puffs tumble into the back room, squeeze past the sofa, cross the front room and leave by the front door.</li><li>On the way, each puff gives the air in a room a little kick, like flicking the mouth of a bottle. Each room then rings at its own note: <b>small room, high note; big room, low note</b>.</li></ul>
+ <p>The house boosts some notes of the buzz and muffles others, and your ear hears that mix as a vowel. It is not a whistle: no air squeals through a gap. The rooms just amplify.</p>
+ <h4>Two pitches: do not mix them up</h4>
+ <ul><li><b>Voice pitch</b> is how fast the kazoo buzzes. Sing “ee, ah, oo” on one note and the yellow dots keep exactly the same rhythm.</li>
+ <li><b>Room notes</b> are what each room rings at. They move when the sofa moves, and they make the vowel. Phoneticians call them F1 and F2.</li></ul>
+ <h4>Three house parties</h4>
+ <ul><li><b>“ee”:</b> the sofa humps up toward the roof while its front edge stays low, down behind your lower teeth. It does not slide up to your front teeth. The front room shrinks to a broom closet that squeaks a high note, and the back room becomes a ballroom with a deep note. Bright, squeaky “eee”, like a mouse in a closet.</li>
+ <li><b>“ah”:</b> the sofa sinks into the floor and the jaw drops (the dentist says “say ah”). The front room becomes a ballroom and the throat shrinks to a cupboard with a high note. Open, ringing “ahh”.</li>
+ <li><b>“oo”:</b> the sofa humps up at the back, and the front door is pushed out into a long hallway with a tiny door (rounded lips). Long hallway, small door: a dark, hollow, owl-like “ooo”.</li></ul>
+ <h4>Try it at home</h4>
+ <ul><li><b>Whisper “ee, ah, oo”.</b> The kazoo is off, yet you can still hear three vowels. That is the rooms alone.</li>
+ <li><b>Hum one note and glide “ee” to “oo”.</b> The note stays put while the color changes.</li>
+ <li><b>Finger in front of your lips</b> for “ee” then “oo”: feel the door push out into a hallway.</li></ul>
+ <p>Small print: a house with two rooms is a toy model. The real vocal tract is one continuous, curvy tube, and the “room notes” are an approximation of how it behaves.</p></details>
  <div id="st-ev" hidden><p>Ultrasound imaging shows the midsagittal tongue surface as a moving line, which is what the ribbon above imitates. MRI-based animations show the whole vocal tract at once: tongue, velum, pharynx and lips.</p>
  <p><a href="https://www.seeingspeech.ac.uk/" target="_blank" rel="noopener">Seeing Speech (University of Glasgow)</a> pairs ultrasound, MRI and animations for each sound. Compare its images with this schematic: the drawing here is a simplified teaching model with illustrative coordinates, not measured data.</p></div>`;
  const f=$('footer.foot');f.parentNode.insertBefore(sec,f);
@@ -190,7 +201,7 @@ function build(){const sec=document.createElement('section');sec.className='stud
  $('#st-sc').oninput=e=>{st.t=e.target.value/1000;st.play=false;pp.textContent='Play';draw()};
  $('#st-slow').onchange=e=>st.slow=e.target.checked;
  mode('vowel');let last=performance.now();
- (function loop(n){const dt=(n-last)/1000;last=n;if(st.play&&!sec.querySelector('#st-grid').hidden){st.t+=st.dir*dt/(st.slow?10:4);
+ (function loop(n){const dt=(n-last)/1000;last=n;if(st.play&&!sec.querySelector('#st-grid').hidden){st.t+=st.dir*dt/(st.slow?10:4);st.clock+=dt*(st.slow?.4:1);
   if(st.t>=1){st.t=1;st.dir=-1}if(st.t<=0){st.t=0;st.dir=1}draw()}requestAnimationFrame(loop)})(last)}
 
 window.SoundStudio={showSym(sym){const k=KEY[sym];if(!k)return;st.v=k;mode('vowel')}};
