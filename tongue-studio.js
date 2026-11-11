@@ -83,9 +83,48 @@ const VOWELS={
   focus:'Open the jaw more than for “oh”, round the lips, and hold it long.',
   err:{pts:[[100,190],[135,182],[180,168],[250,140],[308,208]],jaw:.6,round:.15,spread:0,name:'Not rounding enough (オ)',fix:'Open the jaw and round the lips; keep it long.'}}
 };
-const PAIRS=[['i','a'],['i','u'],['e','o'],['u','a'],['i','I'],['ae','e']];
+const PAIRS=[['i','a'],['i','u'],['e','o'],['u','a'],['i','I'],['ae','e'],
+ /* 11 Nov 2026: every vowel pair that the Learning Hub's “Ship or Sheep?” game uses */
+ ['ae','A'],['a','A'],['o','aw'],['a','er'],['u','U'],['aw','er']];
+/* example words to hear for a pair (index into PAIRS); pairs without one use each vowel's own word */
+const PAIRW={4:['sheep','ship'],5:['cat','bed'],6:['cat','cut'],7:['hot','hut'],8:['bowl','ball'],9:['hot','hurt'],10:['pool','pull'],11:['walk','work']};
+/* ---------- Consonant Lab (11 Nov 2026) ----------
+   The same whole-tongue model, now for consonants, so every Ship-or-Sheep pair has its animation here.
+   close = lips pressed shut, bite = top teeth on the bottom lip, nose = air goes out of the nose (all 0..1).
+   Coordinates are the same illustrative schematic as the vowels: roof ridge ≈ (100,108), soft palate ≈ (240,92). */
+const CREST={pts:[[100,200],[135,198],[180,194],[235,194],[300,222]],jaw:.05,round:0,spread:.3};
+const C_RIDGE=[[102,108],[130,124],[180,140],[235,150],[296,212]], C_NEAR=[[104,119],[132,128],[180,142],[235,152],[296,212]], C_BACK=[[100,196],[135,184],[185,140],[240,93],[298,210]];
+const CONS={
+ p:{sym:'p',pts:CREST.pts,jaw:.05,round:0,spread:.2,close:1,touch:'both lips press shut',air:'The air is trapped behind the lips… then they open: pop!'},
+ b:{sym:'b',pts:CREST.pts,jaw:.05,round:0,spread:.2,close:1,touch:'both lips press shut',air:'A pop, with the voice buzzing.'},
+ m:{sym:'m',pts:CREST.pts,jaw:.05,round:0,spread:.2,close:1,nose:1,touch:'both lips press shut',air:'The air hums out of the nose.'},
+ f:{sym:'f',pts:CREST.pts,jaw:.12,round:0,spread:.3,bite:1,touch:'the top teeth rest on the bottom lip',air:'Air squeezes between teeth and lip: a soft hiss.'},
+ v:{sym:'v',pts:CREST.pts,jaw:.12,round:0,spread:.3,bite:1,touch:'the top teeth rest on the bottom lip',air:'The same hiss, with the voice buzzing.'},
+ th:{sym:'θ',pts:[[72,140],[105,152],[170,160],[235,165],[296,214]],jaw:.2,round:0,spread:.3,touch:'the tongue tip peeks out between the teeth',air:'Soft air slides over the tongue. No buzz in “think”.'},
+ t:{sym:'t',pts:C_RIDGE,jaw:.15,round:0,spread:.3,touch:'the tongue tip presses the ridge behind the top teeth',air:'Trapped, then pop!'},
+ d:{sym:'d',pts:C_RIDGE,jaw:.15,round:0,spread:.3,touch:'the tongue tip presses the ridge behind the top teeth',air:'A pop, with the voice buzzing.'},
+ n:{sym:'n',pts:C_RIDGE,jaw:.15,round:0,spread:.3,nose:1,touch:'the tongue tip presses the ridge',air:'The air hums out of the nose.'},
+ l:{sym:'l',pts:C_RIDGE,jaw:.15,round:0,spread:.3,touch:'the tongue tip TOUCHES the ridge',air:'The air flows round both sides of the tongue, like water round a stone.'},
+ r:{sym:'r',pts:[[114,138],[140,138],[185,144],[238,150],[294,210]],jaw:.2,round:.45,spread:0,touch:'the tongue lifts and pulls back but touches NOTHING; the lips round a little',air:'A smooth glide: nothing blocks the air.'},
+ s:{sym:'s',pts:C_NEAR,jaw:.1,round:0,spread:.5,touch:'the tongue tip comes very close to the ridge but does NOT touch',air:'Air rushes through the tiny gap: a sharp snake hiss.'},
+ z:{sym:'z',pts:C_NEAR,jaw:.1,round:0,spread:.5,touch:'the tongue tip comes very close to the ridge but does NOT touch',air:'The snake hiss, with the voice buzzing (a bee).'},
+ sh:{sym:'ʃ',pts:[[108,128],[134,107],[180,128],[236,148],[296,212]],jaw:.12,round:.75,spread:0,touch:'the tongue lifts a little further back and the lips push out',air:'A wider gap: a soft, hushing “shhh”.'},
+ k:{sym:'k',pts:C_BACK,jaw:.1,round:0,spread:.3,touch:'the back of the tongue presses the soft roof',air:'Trapped at the back, then pop!'},
+ g:{sym:'g',pts:C_BACK,jaw:.1,round:0,spread:.3,touch:'the back of the tongue presses the soft roof',air:'A pop at the back, with the voice buzzing.'},
+ w:{sym:'w',pts:[[100,195],[135,190],[180,172],[255,112],[302,198]],jaw:.12,round:1,spread:0,touch:'the lips make a small round tunnel; nothing touches',air:'A smooth glide into the vowel.'},
+ j:{sym:'j',pts:[[100,186],[135,150],[182,101],[235,124],[284,205]],jaw:.12,round:0,spread:.8,touch:'the middle of the tongue rises towards the hard roof',air:'A smooth glide into the vowel.'},
+ h:{sym:'h',pts:CREST.pts,jaw:.35,round:0,spread:.3,touch:'nothing touches at all',air:'Just a breath from the throat: “haaa”.'}
+};
+/* every consonant pair that “Ship or Sheep?” uses: [a, b, word a, word b] */
+const CPAIRS=[['l','r','light','right'],['p','f','pan','fan'],['f','h','fair','hair'],['s','sh','sea','she'],['s','th','sink','think'],['b','v','best','vest'],['f','v','fan','van']];
+/* IPA → studio key, for links like #pair=æ,ʌ from the Learning Hub */
+const IPA2V={'iː':'i','i':'i','ɪ':'I','e':'e','æ':'ae','ʌ':'A','ɑː':'a','ɑ':'a','a':'a','ɔː':'aw','ɔ':'aw','ʊ':'U','uː':'u','u':'u','ɜː':'er','ɜ':'er','ə':'sh','oʊ':'o','o':'o'};
+const IPA2C={'ʃ':'sh','θ':'th','ð':'th','tʃ':'sh','dʒ':'sh','ʒ':'sh','ŋ':'g'};
+const qb=(a,c,b,t)=>[(1-t)*(1-t)*a[0]+2*(1-t)*t*c[0]+t*t*b[0],(1-t)*(1-t)*a[1]+2*(1-t)*t*c[1]+t*t*b[1]];
+/* the drawn roof “M92 112Q130 92 180 90T240 92Q292 96 300 130”, sampled for the touch! mark */
+const GROOF=[];for(let i=0;i<=40;i++){const t=i/40;GROOF.push(qb([92,112],[130,92],[180,90],t),qb([180,90],[230,88],[240,92],t),qb([240,92],[292,96],[300,130],t))}
 const KEY={'iː':'i','ɪ':'I','e':'e','æ':'ae','ʌ':'A','ɑː':'a','ɔː':'aw','ʊ':'U','uː':'u','ɜː':'er','ə':'sh'}; /* chart vowels that map to a studio vowel */
-const st={mode:'vowel',clock:0,ph:0,f0:.5,v:'i',pair:0,t:0,dir:1,play:!matchMedia('(prefers-reduced-motion:reduce)').matches,slow:false};
+const st={mode:'vowel',clock:0,ph:0,f0:.5,v:'i',pair:0,cpair:0,t:0,dir:1,play:!matchMedia('(prefers-reduced-motion:reduce)').matches,slow:false};
 
 const css=`.studio{margin-top:40px;background:linear-gradient(180deg,var(--panel-2),var(--panel));border:1px solid var(--border);border-radius:18px;padding:20px}
 .studio h2{font-family:var(--font-display);font-weight:600;font-size:24px;margin:0 0 6px}.studio p{color:var(--parchment-dim);font-size:14px;line-height:1.55;margin:0 0 12px;max-width:68ch}
@@ -103,7 +142,8 @@ const css=`.studio{margin-top:40px;background:linear-gradient(180deg,var(--panel
 .studio .guide{margin-top:18px;background:var(--ink-1);border:1px solid var(--border-soft);border-radius:12px;padding:14px 16px}.studio .guide summary{cursor:pointer;font-weight:700;font-size:15px}.studio .guide h4{margin:14px 0 4px}.studio .guide ul{margin:0 0 10px;padding-left:20px;color:var(--parchment-dim);font-size:14px;line-height:1.6}
 .studio a{color:var(--root-blue)}.studio h4{margin:0 0 6px;font-size:14px}`;
 
-function mix(A,B,t){return{pts:A.pts.map((p,i)=>[lp(p[0],B.pts[i][0],t),lp(p[1],B.pts[i][1],t)]),jaw:lp(A.jaw,B.jaw,t),round:lp(A.round,B.round,t),spread:lp(A.spread,B.spread,t)}}
+function mix(A,B,t){return{pts:A.pts.map((p,i)=>[lp(p[0],B.pts[i][0],t),lp(p[1],B.pts[i][1],t)]),jaw:lp(A.jaw,B.jaw,t),round:lp(A.round,B.round,t),spread:lp(A.spread,B.spread,t),
+ close:lp(A.close||0,B.close||0,t),bite:lp(A.bite||0,B.bite||0,t),nose:lp(A.nose||0,B.nose||0,t)}}
 function spline(p){let d='M'+p[0];for(let i=0;i<p.length-1;i++){const a=p[Math.max(i-1,0)],b=p[i],c=p[i+1],e=p[Math.min(i+2,p.length-1)];
  d+=` C${b[0]+(c[0]-a[0])/6} ${b[1]+(c[1]-a[1])/6} ${c[0]-(e[0]-b[0])/6} ${c[1]-(e[1]-b[1])/6} ${c[0]} ${c[1]}`}return d}
 function body(m){const p=m.pts,yb=248+m.jaw*14;return spline(p)+` L${p[4][0]+4} ${yb+8} L128 ${yb} L${p[0][0]-6} ${p[0][1]+24} Z`}
@@ -114,6 +154,9 @@ function setup(){if(st.mode==='evidence'){evid();return}const A=st.mode==='contr
  else if(st.mode==='contrast'){const B=VOWELS[PAIRS[st.pair][1]];st.from=A;st.to=B;st.ghost=null;
   const d=RN.map((r,i)=>[r,Math.hypot(A.pts[i][0]-B.pts[i][0],A.pts[i][1]-B.pts[i][1])]).sort((a,b)=>b[1]-a[1]);
   st.zones={};d.forEach(([r,v],k)=>st.zones[r]=k<2?'y':(k==2&&v>12?'o':'b'));st.big=d.slice(0,2).map(x=>RL[x[0]]);}
+ else if(st.mode==='cons'){const [a,b]=CPAIRS[st.cpair],A=CONS[a],B=CONS[b];st.from=A;st.to=B;st.ghost=null;
+  const d=RN.map((r,i)=>[r,Math.hypot(A.pts[i][0]-B.pts[i][0],A.pts[i][1]-B.pts[i][1])]).sort((a,b)=>b[1]-a[1]);
+  st.zones={};d.forEach(([r,v],k)=>st.zones[r]=v<6?'b':k<2?'y':'o');st.big=d.filter(x=>x[1]>=6).slice(0,2).map(x=>RL[x[0]]);}
  st.t=0;st.dir=1;info();draw()}
 
 function dims(m){const p=m.pts;return{f:cl(((p[2][1]+p[3][1])/2-94)/120,.06,1),b:cl((343-p[4][0]-8)/60,.06,1),o:cl(.3+.5*m.jaw+.25*m.spread-.55*m.round,.1,1)}}
@@ -129,12 +172,19 @@ function info(){const v=VOWELS[st.v],i=$('#st-info');let h='';
  if(st.mode==='mistake')h=`<h3>Habit: ${v.err.name}</h3><p>🔴 red ghost = the habit · 🟢 green dashed outline = the target · arrows show which way to move. Press Play to watch the correction.</p><p><b>Correction:</b> ${v.err.fix}</p>`;
  if(st.mode==='contrast'){const [a,b]=PAIRS[st.pair],A=VOWELS[a],B=VOWELS[b],x=[];
   if(Math.abs(A.jaw-B.jaw)>.3)x.push('jaw '+(B.jaw>A.jaw?'opens':'closes'));if(Math.abs(A.round-B.round)>.4)x.push('lips '+(B.round>A.round?'round':'unround'));
-  h=`<h3>/${A.sym}/ ↔ /${B.sym}/</h3><p>Yellow marks what changes most: <b>${st.big.join(' and ')}</b>${x.length?'; also '+x.join(', '):''}. Blue regions barely move.</p>`}
- i.innerHTML=h;const hb=$('#st-hear');if(hb)hb.onclick=()=>window.say&&window.say(v.say)}
+  const W=PAIRW[st.pair]||[A.say,B.say];
+  h=`<h3>/${A.sym}/ ↔ /${B.sym}/ <button class="chip" data-say="${W[0]}">🔊 ${W[0]}</button> <button class="chip" data-say="${W[1]}">🔊 ${W[1]}</button></h3><p>Yellow marks what changes most: <b>${st.big.join(' and ')}</b>${x.length?'; also '+x.join(', '):''}. Blue regions barely move.</p>`}
+ if(st.mode==='cons'){const [a,b,wa,wb]=CPAIRS[st.cpair],A=CONS[a],B=CONS[b];
+  h=`<h3>/${A.sym}/ ↔ /${B.sym}/ <button class="chip" data-say="${wa}">🔊 ${wa}</button> <button class="chip" data-say="${wb}">🔊 ${wb}</button></h3>
+  <p><b>“${wa}”</b>: ${A.touch}. ${A.air}</p><p><b>“${wb}”</b>: ${B.touch}. ${B.air}</p>
+  <p>${st.big.length?'Yellow marks what moves most: <b>'+st.big.join(' and ')+'</b>. ':'The tongue hardly moves: the difference is in the lips, teeth or nose. '}A red <b style="color:#ff6b6b">touch!</b> ring marks where something touches.</p>
+  <p>🌸 A <b>vowel</b> never blocks the air; a <b>consonant</b> always puts something in its way. What the air does next — pop, hiss, hum — is the other half of the story, in <a href="https://renjithadhvaith.github.io/the-sound-forge/" target="_blank" rel="noopener">🔥 The Sound Forge</a>.</p>`}
+ i.innerHTML=h;const hb=$('#st-hear');if(hb)hb.onclick=()=>window.say&&window.say(v.say);
+ i.querySelectorAll('[data-say]').forEach(b=>b.onclick=()=>window.say&&window.say(b.dataset.say))}
 
 function lens(m){const {f,b,o}=dims(m),hf=6+f*50,hb=6+b*50,F=rm(f),B=rm(b),c=st.clock;
  const wv=(x0,x1,h,n,col)=>{const A=Math.min(h*.55,14);let d='';for(let k=0;k<=40;k++)d+=(k?'L':'M')+(x0+(x1-x0)*k/40).toFixed(1)+' '+(62+A*Math.sin(6.283*n*k/40+c*n*1.6)).toFixed(1);return`<path d="${d}" fill="none" stroke="${col}" stroke-width="2.2" stroke-linecap="round"/>`},
- V=VOWELS[st.v],ttl=st.mode==='contrast'?`/${VOWELS[PAIRS[st.pair][0]].sym}/ ↔ /${VOWELS[PAIRS[st.pair][1]].sym}/ morph`:st.mode==='mistake'?`/${V.sym}/ “${V.label}”: habit → target`:`/${V.sym}/ as in “${V.label}”`;
+ V=VOWELS[st.v],ttl=st.mode==='cons'?`/${CONS[CPAIRS[st.cpair][0]].sym}/ ↔ /${CONS[CPAIRS[st.cpair][1]].sym}/ (consonants)`:st.mode==='contrast'?`/${VOWELS[PAIRS[st.pair][0]].sym}/ ↔ /${VOWELS[PAIRS[st.pair][1]].sym}/ morph`:st.mode==='mistake'?`/${V.sym}/ “${V.label}”: habit → target`:`/${V.sym}/ as in “${V.label}”`;
  let puffs='';for(let i=0;i<9;i++){const u=(st.ph+i*41.7)%375;puffs+=`<circle cx="${415-u}" cy="${62+Math.sin(c*7+i*2)*4}" r="3.2" fill="#e7ac5f" opacity="${u<20||u>355?.3:.9}"/>`}
  const bar=(y,l,v,col,w)=>`<text x="8" y="${y+8}" font-size="10" class="lb">${l}</text><rect x="130" y="${y}" width="220" height="8" rx="4" class="tr"/><rect x="130" y="${y}" width="${220*v}" height="8" rx="4" fill="${col}"/><text x="358" y="${y+8}" font-size="10" class="lb">${w}</text>`;
  $('#st-lens').innerHTML=`<rect x="50" y="${62-hf}" width="165" height="${hf*2}" rx="22" fill="#93b26a" fill-opacity=".35" stroke="#93b26a"/><rect x="215" y="55" width="20" height="14" fill="#8aa9c9" fill-opacity=".4"/>
@@ -159,7 +209,11 @@ function draw(){const e=st.t*st.t*(3-2*st.t),m=mix(st.from,st.to,e),P=m.pts,jy=m
  if(st.mode==='mistake'){s+=`<path d="${body(st.to)}" fill="none" stroke="#6fbf6a" stroke-width="2.2" stroke-dasharray="6 4"/>`;
   RN.forEach((r,i)=>{const a=st.from.pts[i],c=st.to.pts[i];if(Math.hypot(a[0]-c[0],a[1]-c[1])>14)s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${c[0]}" y2="${c[1]}" class="al" stroke-width="2" stroke-dasharray="3 3" marker-end="url(#ar)"/>`})}
  const lx=50-m.round*14+m.spread*4,ry=8+m.round*4-m.spread*2;
- s+=`<ellipse cx="${lx}" cy="118" rx="${11+m.spread*5}" ry="${ry}" fill="#d98c9b"/><ellipse cx="${lx}" cy="${ly-2}" rx="${11+m.spread*5}" ry="${ry}" fill="#d98c9b"/>`;
+ const cz=m.close||0,bz=m.bite||0,loY=lp(lp(ly-2,118+ry*2-1,cz),128+ry-3,bz),loX=lp(lx,72,bz);
+ s+=`<ellipse cx="${lx}" cy="118" rx="${11+m.spread*5}" ry="${ry}" fill="#d98c9b"/><ellipse cx="${loX}" cy="${loY}" rx="${11+m.spread*5}" ry="${ry}" fill="#d98c9b"/>`;
+ if((m.nose||0)>.05)s+=`<g opacity="${m.nose}"><path d="M298 128C318 96 322 64 312 40" fill="none" stroke="#e7ac5f" stroke-width="3" stroke-dasharray="6 5" marker-end="url(#ar)"/><text x="318" y="36" font-size="12" class="hl ar">air → nose 👃</text></g>`;
+ if(st.mode==='cons'){let c=null;if(cz>.8)c=[lx,118+ry];else if(bz>.8)c=[74,129];else{let bd=1e9;for(let i=0;i<4;i++)for(const r of GROOF){const dd=Math.hypot(P[i][0]-r[0],P[i][1]-r[1]);if(dd<bd){bd=dd;c=r}}if(bd>5.5)c=null}
+  if(c)s+=`<circle cx="${c[0]}" cy="${c[1]}" r="9" fill="none" stroke="#ff6b6b" stroke-width="3"/><text x="${c[0]+12}" y="${c[1]-8}" font-size="12" font-weight="800" fill="#ff6b6b" class="hl">touch!</text>`}
  const anc={jaw:[66,ly+8],lips:[44,142]};
  if(st.mode==='vowel')(V.arrows||[]).forEach(([r,dx,dy,t])=>{const a=anc[r]||P[RN.indexOf(r)],x2=a[0]+dx*e,y2=a[1]+dy*e;
   if(dx||dy)s+=`<line x1="${a[0]}" y1="${a[1]}" x2="${x2}" y2="${y2}"  class="al" stroke-width="2.2" marker-end="url(#ar)" opacity="${e}"/>`;
@@ -168,9 +222,10 @@ function draw(){const e=st.t*st.t*(3-2*st.t),m=mix(st.from,st.to,e),P=m.pts,jy=m
  $('#st-main').innerHTML=s;lens(m);$('#st-sc').value=Math.round(st.t*1000)}
 
 function pickers(){const p=$('#st-pk');
- p.innerHTML=st.mode==='contrast'?PAIRS.map((x,i)=>`<button class="chip" data-i="${i}" aria-pressed="${i==st.pair}">/${VOWELS[x[0]].sym}/ ↔ /${VOWELS[x[1]].sym}/</button>`).join(''):
+ p.innerHTML=st.mode==='cons'?CPAIRS.map((x,i)=>`<button class="chip" data-c="${i}" aria-pressed="${i==st.cpair}">/${CONS[x[0]].sym}/ ↔ /${CONS[x[1]].sym}/ ${x[2]}·${x[3]}</button>`).join(''):
+ st.mode==='contrast'?PAIRS.map((x,i)=>`<button class="chip" data-i="${i}" aria-pressed="${i==st.pair}">/${VOWELS[x[0]].sym}/ ↔ /${VOWELS[x[1]].sym}/${PAIRW[i]?' '+PAIRW[i].join('·'):''}</button>`).join(''):
   Object.keys(VOWELS).map(k=>`<button class="chip" data-k="${k}" aria-pressed="${k==st.v}">/${VOWELS[k].sym}/ ${VOWELS[k].label}</button>`).join('');
- p.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(b.dataset.k)st.v=b.dataset.k;else st.pair=+b.dataset.i;pickers();setup()})}
+ p.querySelectorAll('button').forEach(b=>b.onclick=()=>{if(b.dataset.k)st.v=b.dataset.k;else if(b.dataset.c)st.cpair=+b.dataset.c;else st.pair=+b.dataset.i;pickers();setup()})}
 
 function mode(m){st.mode=m;document.querySelectorAll('#st-tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m));
  const ev=m==='evidence';$('#st-ev').hidden=!ev;$('#st-grid').hidden=ev;$('#st-ctl').hidden=ev;$('#st-guide').hidden=ev;$('#st-lab').hidden=ev;pickers();setup()}
@@ -192,10 +247,19 @@ function lab(){const L={f0:.5,room:.5,snd:false,t:0,vis:true},svg=$('#st-labsvg'
  $('#lab-snd').onclick=e=>{L.snd=!L.snd;e.target.setAttribute('aria-pressed',L.snd);e.target.textContent=L.snd?'🔊 Sound on':'🔈 Hear it';snd()};
  new IntersectionObserver(en=>L.vis=en[0].isIntersecting).observe($('#st-lab'));txt();ldraw();
  let last=performance.now();(function tick(n){const dt=Math.min((n-last)/1000,.1);last=n;if(L.vis&&!red){L.t+=dt;ldraw()}requestAnimationFrame(tick)})(last)}
+/* #pair=æ,ʌ  or  #pair=s,θ  (IPA or studio keys): opens that pair in the Contrast Lab / Consonant Lab.
+   The Learning Hub links here from each Ship-or-Sheep question. A pair not in the lists is added on the fly. */
+function openFromHash(){let h='';try{h=decodeURIComponent(location.hash||'')}catch(e){return}
+ const m=/^#pair=([^,]+),([^,&]+)/.exec(h);if(!m)return;
+ const vk=x=>VOWELS[x]?x:IPA2V[x],ck=x=>CONS[x]?x:IPA2C[x]||(CONS[x.replace(/ː/,'')]?x.replace(/ː/,''):null);
+ let a=vk(m[1]),b=vk(m[2]);
+ if(a&&b&&a!==b){let i=PAIRS.findIndex(p=>(p[0]==a&&p[1]==b)||(p[0]==b&&p[1]==a));if(i<0){PAIRS.push([a,b]);i=PAIRS.length-1}st.pair=i;mode('contrast')}
+ else{a=ck(m[1]);b=ck(m[2]);if(!(a&&b&&a!==b))return;let i=CPAIRS.findIndex(p=>(p[0]==a&&p[1]==b)||(p[0]==b&&p[1]==a));if(i<0){CPAIRS.push([a,b,CONS[a].sym,CONS[b].sym]);i=CPAIRS.length-1}st.cpair=i;mode('cons')}
+ const el=document.getElementById('studio');if(el)setTimeout(()=>el.scrollIntoView({behavior:'smooth',block:'start'}),120)}
 function build(){const sec=document.createElement('section');sec.className='studio';sec.id='studio';
  sec.innerHTML=`<style>${css}</style><h2>Tongue Studio: the whole tongue shapes a vowel</h2>
  <p>Vowels are not made by a tongue tip. The tip, blade, front body, dorsum and root move together with the jaw and lips, and the shape they give the vocal tract is what you hear.</p>
- <div class="row" id="st-tabs" role="tablist">${[['vowel','Vowels'],['contrast','Contrast Lab'],['mistake','Common Mistakes'],['evidence','Evidence']].map(([k,l])=>`<button class="chip" role="tab" data-m="${k}" aria-selected="${k=='vowel'}">${l}</button>`).join('')}</div>
+ <div class="row" id="st-tabs" role="tablist">${[['vowel','Vowels'],['contrast','Contrast Lab'],['cons','Consonant Lab'],['mistake','Common Mistakes'],['evidence','Evidence']].map(([k,l])=>`<button class="chip" role="tab" data-m="${k}" aria-selected="${k=='vowel'}">${l}</button>`).join('')}</div>
  <div class="row" id="st-pk"></div>
  <div class="grid" id="st-grid"><div><svg id="st-main" viewBox="0 0 440 290" role="img" aria-label="Side view of the mouth with a flexible tongue"></svg>
   <div class="key" style="margin-top:10px"><span><i style="background:${COL.y}"></i>Primary shaping</span><span><i style="background:${COL.o}"></i>Supporting</span><span><i style="background:${COL.b}"></i>Relaxed</span></div></div>
@@ -235,7 +299,10 @@ function build(){const sec=document.createElement('section');sec.className='stud
  const pp=$('#st-pp');pp.textContent=st.play?'Pause':'Play';pp.onclick=()=>{st.play=!st.play;pp.textContent=st.play?'Pause':'Play'};
  $('#st-sc').oninput=e=>{st.t=e.target.value/1000;st.play=false;pp.textContent='Play';draw()};
  $('#st-slow').onchange=e=>st.slow=e.target.checked;
- lab();mode('vowel');let last=performance.now();
+ lab();mode('vowel');
+ /* index.html has its own #pair= handler (opens the vowel's card on the chart, and that switches the studio to
+    “Vowels”). Run just after it so the studio ends on the pair, and scroll here last: the animation is the point. */
+ const later=()=>setTimeout(openFromHash,260);later();window.addEventListener('load',later);window.addEventListener('hashchange',later);let last=performance.now();
  (function loop(n){const dt=(n-last)/1000;last=n;if(st.play&&!sec.querySelector('#st-grid').hidden){st.t+=st.dir*dt/(st.slow?10:4);st.clock+=dt*(st.slow?.4:1);st.ph+=dt*60*(.5+1.5*st.f0)*(st.slow?.4:1);
   if(st.t>=1){st.t=1;st.dir=-1}if(st.t<=0){st.t=0;st.dir=1}draw()}requestAnimationFrame(loop)})(last)}
 
